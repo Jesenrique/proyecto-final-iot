@@ -11,6 +11,10 @@ from services.db_worker import db_writer_worker
 # Asumo que tienes estas funciones de DB
 from services.config.db import connect_to_db, close_db_connection
 
+from fastapi.middleware.cors import CORSMiddleware
+
+from services.routers.plantas import router as plantas_router
+
 # Variable global para almacenar las tareas de larga duración y el pool
 LONG_RUNNING_TASKS = [] 
 DB_POOL = None 
@@ -71,14 +75,22 @@ async def lifespan(app: FastAPI):
 
 
 
-
 # ----------------------------------------------------
 # Instancia de FastAPI (Uvicorn buscará 'app')
 app = FastAPI(lifespan=lifespan)
 
-# Aquí agregas tus rutas (usando APIRouter) y el middleware CORS.
-# Por ejemplo: app.include_router(db_router)
-# ----------------------------------------------------
+# --- CORS ÚNICO Y CENTRALIZADO ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200", "http://127.0.0.1:4200"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# --- CONECTAR EL ROUTER A LA APP ---
+app.include_router(plantas_router)
+
 
 # (No necesitas el if __name__ == "__main__": asyncio.run(main())
 # Ya que usas Uvicorn para ejecutar la app: uvicorn main:app --reload)

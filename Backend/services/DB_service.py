@@ -25,20 +25,6 @@ async def lifespan(app: FastAPI):
 # La variable app debe estar a nivel global para que Uvicorn la vea
 app = FastAPI(lifespan=lifespan)
 
-# --- 3. CONFIGURACIÓN CORS ---
-origins = [
-    "http://localhost:4200",
-    "http://127.0.0.1:4200"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 # --- 4. DEPENDENCIA PARA OBTENER EL POOL ---
 # Esta función permite que tus rutas pidan el pool sin usar variables globales
 def get_db_pool(request: Request):
