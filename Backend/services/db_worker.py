@@ -17,13 +17,13 @@ async def db_writer_worker(queue: asyncio.Queue, db_pool):
             # Ejemplo de lógica de guardado:
             async with db_pool.acquire() as conn:
                 query = """
-                    INSERT INTO lectura (id_manometro, valor, fecha_lectura)
-                    VALUES ($1, $2, NOW())
+                    INSERT INTO lectura (id_manometro, valor)
+                    VALUES ($1, $2)
                 """
                 # Asumiendo que data_packet tiene {'id': 1, 'val': 50.5}
-                await conn.execute(query, data_packet['id'], data_packet['val'])
+                await conn.execute(query, data_packet['id'], data_packet['value'])
                 
-            # print(f"✅ Dato guardado: {data_packet}")
+            print(f"✅ Dato guardado: {data_packet}")
 
         except Exception as e:
             print(f"❌ Error guardando en BD: {e}")

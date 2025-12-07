@@ -1,0 +1,7 @@
+mosquitto_pub -h localhost -t sensor/data -u usuario -P clave -m "{\"status\":\"ok\"}"
+
+
+mosquitto_pub -h localhost -t python/mqtt/ -m "{\"id\":1,\"value\":\"39"}"
+
+
+"python/mqtt/#"
