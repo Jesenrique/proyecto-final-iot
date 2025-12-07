@@ -1,0 +1,4 @@
+# Ejemplo de .gitignore
+env
+Backend/services/config/db.py
+Backend/services/db_connection.py

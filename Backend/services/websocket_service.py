@@ -79,4 +79,4 @@ async def start_websocket_server():
     print("Servidor WebSockets iniciado en ws://localhost:8765")
     # await asyncio.gather ejecuta ambas tareas hasta que sean canceladas
     #await asyncio.gather(websocket_server, data_sender)
-    await websocket_server
+    return websocket_server

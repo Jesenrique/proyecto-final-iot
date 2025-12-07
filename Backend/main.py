@@ -1,51 +1,73 @@
-# main.py (SOLUCIÓN FINAL, SIN FUNCIONES INTERMEDIAS ASYNC)
-
+# main.py
 import asyncio
-import websockets
-# Importar la tarea final que queremos ejecutar
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+
+# Importar tus servicios
 from services.websocket_service import start_websocket_server 
 from services.MQTT_service import start_mqtt_client_task 
 
+# Asumo que tienes estas funciones de DB
+from services.config.db import connect_to_db, close_db_connection
 
-# Importa el conjunto de clientes
-from core.state_manager import CONNECTED_CLIENTS 
+# Variable global para almacenar las tareas de larga duración y el pool
+LONG_RUNNING_TASKS = [] 
+DB_POOL = None 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # FASE DE INICIO (Antes del yield)
 
-async def main():
-    """
-    Coordina e inicia todas las tareas asíncronas concurrentemente.
-    """
     print("=============================================")
-    print("  🚀 Iniciando Coordinador de Servicios IoT  ")
+    print("  🚀 FastAPI: Inicializando Recursos y Tareas  ")
     print("=============================================")
-
-    # 1. Tarea WebSockets: Llama y espera el resultado de start_websocket_server(),
-    # que es la tarea de escucha (el objeto Server de websockets).
-    # Este resultado es un objeto 'Server', que es AWAITABLE pero NO una corrutina simple.
-    websocket_server_task = start_websocket_server()
-    print("🌐 Servidor WebSockets escuchando en ws://localhost:8765")
     
-    # 2. Tarea MQTT: Llama a la corrutina FINAL.
-    # Esta variable es la corrutina 'start_mqtt_client_task'.
-    mqtt_client_task = start_mqtt_client_task()
-
+    # 1. Conexión a la DB
+    global DB_POOL
+    DB_POOL = await connect_to_db() 
+    app.state.db_pool = DB_POOL # Guardar en el estado de la app
+    print("✅ Pool de DB creado y disponible en app.state.db_pool")
     
-    print(f"Clientes activos iniciales (Verificación): {len(CONNECTED_CLIENTS)}")
+    # 2. Iniciando Tareas de Larga Duración
+    # Creamos las tasks y las agregamos a la lista, pero NO las esperamos.
+    
+    websocket_awaitable = start_websocket_server()
+    websocket_server_instance = await websocket_awaitable
+    app.state.websocket_server = websocket_server_instance
+    print("🌐 Servidor WebSockets lanzado y disponible.")
 
-    try:
-        print("--- Ejecutando Tareas Concurrently ---")
-        
-        # gather necesita las corrutinas (awaitable) o tasks.
-        # websocket_server_task (el objeto Server) es awaitable.
-        # mqtt_client_task (la corrutina) es awaitable.
-        await asyncio.gather(websocket_server_task, mqtt_client_task, ) 
-        
-    except KeyboardInterrupt:
-        print("\n👋 Servidor detenido por el usuario (Ctrl+C).")
-        
-    except Exception as e:
-        print(f"\n❌ Ocurrió un error inesperado en el Coordinador: {e}")
+    # Tarea MQTT
+    mqtt_task = asyncio.create_task(start_mqtt_client_task())
+    LONG_RUNNING_TASKS.append(mqtt_task)
+    print("📡 Cliente MQTT lanzado como tarea asíncrona.")
+    
+    # --- YIELD: La aplicación está lista para recibir peticiones y tareas de fondo ---
+    yield 
+    
+    # FASE DE LIMPIEZA (Después del yield)
+    print("=============================================")
+    print("  🛑 FastAPI: Deteniendo Recursos y Tareas  ")
+    print("=============================================")
+    
+    # 1. Cancelar Tareas de Larga Duración
+    for task in LONG_RUNNING_TASKS:
+        task.cancel()
+    
+    # Esperamos un momento para que se limpien.
+    await asyncio.gather(*LONG_RUNNING_TASKS, return_exceptions=True)
+    print("✅ Tareas de I/O canceladas y detenidas.")
+    
+    # 2. Cierre de la DB
+    await close_db_connection(DB_POOL)
+    print("✅ Pool de DB cerrado.")
 
+# ----------------------------------------------------
+# Instancia de FastAPI (Uvicorn buscará 'app')
+app = FastAPI(lifespan=lifespan)
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# Aquí agregas tus rutas (usando APIRouter) y el middleware CORS.
+# Por ejemplo: app.include_router(db_router)
+# ----------------------------------------------------
+
+# (No necesitas el if __name__ == "__main__": asyncio.run(main())
+# Ya que usas Uvicorn para ejecutar la app: uvicorn main:app --reload)
