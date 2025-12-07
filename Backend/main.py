@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 # Importar tus servicios
 from services.websocket_service import start_websocket_server 
 from services.MQTT_service import start_mqtt_client_task 
+from services.db_worker import db_writer_worker
 
 # Asumo que tienes estas funciones de DB
 from services.config.db import connect_to_db, close_db_connection
@@ -13,6 +14,7 @@ from services.config.db import connect_to_db, close_db_connection
 # Variable global para almacenar las tareas de larga duración y el pool
 LONG_RUNNING_TASKS = [] 
 DB_POOL = None 
+DATA_QUEUE = asyncio.Queue()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,8 +38,13 @@ async def lifespan(app: FastAPI):
     app.state.websocket_server = websocket_server_instance
     print("🌐 Servidor WebSockets lanzado y disponible.")
 
+    #crea la tarea que permite guardar data en la db pasando la cola y el pool
+    db_task = asyncio.create_task(db_writer_worker(DATA_QUEUE, DB_POOL))
+    LONG_RUNNING_TASKS.append(db_task)
+
     # Tarea MQTT
-    mqtt_task = asyncio.create_task(start_mqtt_client_task())
+    # se pasa la cola creada para que ponga alli la data que llega
+    mqtt_task = asyncio.create_task(start_mqtt_client_task(DATA_QUEUE))
     LONG_RUNNING_TASKS.append(mqtt_task)
     print("📡 Cliente MQTT lanzado como tarea asíncrona.")
     
@@ -60,6 +67,10 @@ async def lifespan(app: FastAPI):
     # 2. Cierre de la DB
     await close_db_connection(DB_POOL)
     print("✅ Pool de DB cerrado.")
+
+
+
+
 
 # ----------------------------------------------------
 # Instancia de FastAPI (Uvicorn buscará 'app')
