@@ -71,8 +71,19 @@ async def echo(websocket):
 
 # 4. Iniciar el servidor y el proceso de envío de datos concurrentemente
 async def start_websocket_server():
-    # Creamos dos tareas concurrentes
-    websocket_server = websockets.serve(echo, "localhost", 8765)
+
+    # MODIFICACIÓN CLAVE AQUÍ:
+    websocket_server = await websockets.serve(
+        echo, 
+        "0.0.0.0",      # 1. Escuchar en TODAS las interfaces (evita problemas IPv4/IPv6)
+        8765, 
+        origins=None    # 2. Desactivar protección CORS (permitir conexión desde Angular :4200)
+                        #    Si quieres seguridad estricta, usa: origins=["http://localhost:4200"]
+    )
+    
+    # Imprimir para confirmar dónde está escuchando realmente
+    for sock in websocket_server.sockets:
+        print(f"🌐 WS escuchando en: {sock.getsockname()}")
     #data_sender = data_sender_task() # Tu bucle de envío de datos
 
     # SOLUCIÓN 2: Ejecutamos ambas tareas al mismo tiempo (concurrentemente)
