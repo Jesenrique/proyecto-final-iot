@@ -1,0 +1,14 @@
+.chart-wrapper {
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.chart-container {
+  position: relative;
+  height: 400px; /* Altura del gráfico */
+  width: 90%;    /* Ancho del gráfico */
+  margin: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+}

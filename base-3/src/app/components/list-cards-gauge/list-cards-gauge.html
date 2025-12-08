@@ -12,7 +12,8 @@
 
 <div class="grid grid-cols-4 gap-5 p-10 ">
     @for (dev of dataManometros(); track $index) {
-        <app-card-gauge [siganlID]="dev.id_manometro"
+        <app-card-gauge [routerLink]="['/test', dev.id_manometro]"
+                        [siganlID]="dev.id_manometro"
                         [signalFecha]="dev.fecha_ultima_lectura"
                         [signalUltimaLectura]="dev.ultima_lectura"
                         [signalValue]="getSignal(dev.id_manometro)()">

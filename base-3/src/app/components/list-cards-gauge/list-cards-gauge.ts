@@ -3,10 +3,11 @@ import { CardGauge } from '../card-gauge/card-gauge';
 import { WSService } from '../../services/ws-service';
 import { AnalogGauge } from '../analog-gauge/analog-gauge';
 import { DataManometro } from '../../interfaces/dataManometro';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-list-cards-gauge',
-  imports: [CardGauge],
+  imports: [CardGauge, RouterLink],
   templateUrl: './list-cards-gauge.html',
   styleUrl: './list-cards-gauge.css'
 })
