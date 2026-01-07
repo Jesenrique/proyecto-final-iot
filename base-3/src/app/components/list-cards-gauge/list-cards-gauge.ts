@@ -4,6 +4,7 @@ import { WSService } from '../../services/ws-service';
 import { AnalogGauge } from '../analog-gauge/analog-gauge';
 import { DataManometro } from '../../interfaces/dataManometro';
 import { RouterLink } from '@angular/router';
+import { DbManometros } from '../../services/db-manometros';
 
 @Component({
   selector: 'app-list-cards-gauge',
@@ -11,12 +12,15 @@ import { RouterLink } from '@angular/router';
   templateUrl: './list-cards-gauge.html',
   styleUrl: './list-cards-gauge.css'
 })
-export class ListCardsGauge { 
+export class ListCardsGauge {
+
+  //inyecto el servicio para conocer el numero de manometros
+  private db=inject(DbManometros)
+  dataManometros=this.db.dataManometros
   
   private wsService = inject(WSService);
   devices = this.wsService.deviceValues;
 
-  dataManometros=input.required<DataManometro[]>();
 
     getSignal(id: string) {
     const map = this.devices();

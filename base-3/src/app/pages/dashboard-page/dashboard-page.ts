@@ -1,20 +1,18 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component} from '@angular/core';
 import { RightMenuContainer } from "../../components/right-menu-container/right-menu-container";
 import { SideMenu } from '../../components/side-menu/side-menu';
-import { DbManometros } from '../../services/db-manometros';
-import { RouterLink } from '@angular/router';
+import { ListCardsGauge } from "../../components/list-cards-gauge/list-cards-gauge";
+
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [RightMenuContainer,SideMenu],
+  imports: [ListCardsGauge],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.css'
 })
 export class DashboardPage { 
 
-  //inyecto el servicio para conocer el numero de manometros
-  private db=inject(DbManometros)
-
-  dataManometros=this.db.dataManometros
-
+  constructor() {
+  }
+  
 }

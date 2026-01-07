@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, Query
+from datetime import datetime, timedelta
 
 # 1. Ya no usamos FastAPI(), usamos APIRouter()
 router = APIRouter()
@@ -29,4 +30,45 @@ async def obtener_plantas(pool = Depends(get_db_pool)):
             WHERE m.id_planta = 1
         """
         rows = await conn.fetch(query)
+        return [dict(row) for row in rows]
+
+
+
+@router.get("/lecturas/agregadas")
+async def obtener_historico(
+    id_manometro: int = Query(..., description="ID del manómetro"),
+    pool = Depends(get_db_pool)
+):
+    periodo = 'hour'  
+    fecha_fin = datetime.now() 
+
+    match periodo:
+        case 'hour':
+            fecha_inicio = fecha_fin - timedelta(hours=1)
+        case 'day':
+            fecha_inicio = fecha_fin - timedelta(days=1)
+        case _:
+            raise ValueError("Periodo no soportado")
+
+    print(f"fecha inicio: {fecha_inicio}, fecha fin: {fecha_fin}")
+
+    async with pool.acquire() as conn:
+
+        sql = """
+            SELECT 
+                date_trunc($1, fecha_lectura) AS periodo,
+                ROUND(AVG(valor), 2) AS promedio_valor,
+                MAX(valor) AS max_valor,
+                MIN(valor) AS min_valor
+            FROM lectura 
+            WHERE 
+                id_manometro = $2
+                AND fecha_lectura >= $3
+                AND fecha_lectura <= $4
+            GROUP BY 1
+            ORDER BY 1 ASC;
+        """
+
+        rows = await conn.fetch(sql, periodo, id_manometro, fecha_inicio, fecha_fin)
+
         return [dict(row) for row in rows]

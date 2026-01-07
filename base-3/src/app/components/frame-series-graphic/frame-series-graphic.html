@@ -1,0 +1,89 @@
+<div class="w-full bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+  
+    <!-- parte superior -->
+  <div class="flex justify-between items-start mb-4">
+    <div>
+      <h5 class="text-3xl font-bold text-gray-900 ">
+        {{lastValue()}}
+      </h5>
+      <p class="text-gray-500 text-sm mt-1">Manometro numero: </p>
+    </div>
+
+    <div class="flex items-center px-2.5 py-0.5 text-sm font-semibold text-green-600 bg-green-100 rounded-full text-center">
+      <svg class="w-3 h-3 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+      </svg>
+      Normal
+    </div>
+  </div>
+
+  <!-- Acá se pasa el espacio para graficar -->
+  <ng-content>
+
+  </ng-content>
+
+
+  <!-- parte baja de botones -->
+  <div class="grid grid-cols-1 items-center border-t border-gray-200 justify-between mt-2 pt-4">
+    
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+      
+      <span class="text-sm font-medium text-gray-500 hidden sm:block">
+        Rango de tiempo:
+      </span>
+
+      <div class="inline-flex rounded-md shadow-sm bg-gray-100 p-1" role="group">
+        
+        <button type="button" (click)="cambiarRango('1H')" 
+          class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
+          [ngClass]="rangoActivo() === '1H' 
+            ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
+            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
+          1H
+        </button>
+
+        <button type="button" (click)="cambiarRango('1D')" 
+          class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
+          [ngClass]="rangoActivo() === '1D' 
+            ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
+            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
+          1D
+        </button>
+
+        <button type="button" (click)="cambiarRango('1S')" 
+          class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
+          [ngClass]="rangoActivo() === '1S' 
+            ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
+            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
+          1S
+        </button>
+
+        <button type="button" (click)="cambiarRango('1M')" 
+          class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
+          [ngClass]="rangoActivo() === '1M' 
+            ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
+            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
+          1M
+        </button>
+
+         <button type="button" (click)="cambiarRango('1A')" 
+         class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
+         [ngClass]="rangoActivo() === '1A' 
+           ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
+           : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
+         1A
+       </button>
+      </div>
+
+      <a href="#" class="text-sm font-medium text-blue-600 hover:underline inline-flex items-center">
+        Ver Reporte
+        <svg class="w-3 h-3 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+        </svg>
+      </a>
+
+    </div>
+  </div>
+
+
+</div>

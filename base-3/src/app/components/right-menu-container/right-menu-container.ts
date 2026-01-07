@@ -5,10 +5,10 @@ import { DataManometro } from '../../interfaces/dataManometro';
 
 @Component({
   selector: 'app-right-menu-container',
-  imports: [ListCardsGauge],
+  imports: [],
   templateUrl: './right-menu-container.html',
   styleUrl: './right-menu-container.css'
 })
 export class RightMenuContainer { 
-  dataManometros=input.required<DataManometro[]>();
+  
 }
