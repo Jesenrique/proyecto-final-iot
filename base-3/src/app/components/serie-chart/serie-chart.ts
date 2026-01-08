@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 
@@ -10,7 +10,8 @@ import { Chart, registerables } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { es } from 'date-fns/locale';
 
-import 'chartjs-adapter-date-fns'; 
+import 'chartjs-adapter-date-fns';
+import { DataHistorial } from '../../interfaces/dataHistorial';
 
 // 3. Registras todo
 Chart.register(...registerables);
@@ -24,28 +25,35 @@ Chart.register(...registerables);
   templateUrl: './serie-chart.html',
   styleUrl: './serie-chart.css',
 })
-export class SerieChart { 
-   // --- CONFIGURACIÓN DE DATOS (Lo que se pinta) ---
-  public lineChartData: ChartConfiguration<'line'>['data'] = {
-    datasets: [
-      {
-        data: [
-          // Fíjate en el formato: X es fecha (String ISO), Y es valor
-          { x: '2023-10-27T10:00:00', y: 120 },
-          { x: '2023-10-27T10:05:00', y: 125 },
-          { x: '2023-10-27T10:10:00', y: 122 },
-          { x: '2023-10-27T10:15:00', y: 130 },
-          { x: '2023-10-27T10:20:00', y: 145 }, // Pico de presión
-          { x: '2023-10-27T10:25:00', y: 135 },
-        ] as any[],
-        label: 'Presión de Caldera (PSI)',
-        fill: true, // Rellenar el área bajo la curva
-        tension: 0.4, // Suavizado de la curva (0 es rectas, 1 es muy curvo)
-        borderColor: 'blue',
-        backgroundColor: 'rgba(0,0,255,0.2)'
-      }
-    ]
-  };
+export class SerieChart {
+
+  dataHistorial = input.required<DataHistorial[]>();
+
+
+  public lineChartData = computed<ChartConfiguration<'line'>['data']>(() => {
+    const datosCrudos = this.dataHistorial();
+    // Transformamos los datos del backend al formato X/Y de ChartJS
+    const datosFormateados = datosCrudos.map(item => ({
+      x: item.periodo,
+      y: item.promedio
+    }));
+
+    // Retornamos la estructura compleja que pide la librería
+    return {
+      datasets: [
+        {
+          // se debe castear como any por que typescript pone problema por 
+          // tipo de dato para los ejes
+          data: datosFormateados as any[],
+          label: 'Presión (PSI)',
+          fill: true,
+          tension: 0.4,
+          borderColor: 'blue',
+          backgroundColor: 'rgba(0,0,255,0.2)'
+        }
+      ]
+    };
+  });
 
   // --- CONFIGURACIÓN DE OPCIONES (Cómo se ve) ---
   public lineChartOptions: ChartOptions<'line'> = {
@@ -84,4 +92,3 @@ export class SerieChart {
 
   public lineChartLegend = true;
 }
-
