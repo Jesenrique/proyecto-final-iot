@@ -3,8 +3,8 @@ import { inject, Injectable, signal } from '@angular/core';
 import { DataManometro } from '../interfaces/dataManometro';
 import { WSService } from './ws-service';
 import { FiltroBusqueda } from '../interfaces/filtroBusqueda';
-import { DatoGrafica } from '../interfaces/datoGrafica';
 import { Observable } from 'rxjs';
+import { DataHistorial } from '../interfaces/dataHistorial';
 
 @Injectable({
   providedIn: 'root'
@@ -51,21 +51,23 @@ export class DbManometros {
       });
   }
 
-
-  getHistorialLecturas(filtro: FiltroBusqueda): Observable<DatoGrafica[]> {
-
-    const params = new HttpParams()
-      .set('id_manometro', filtro.id_manometro)
-      .set('fecha_inicio', filtro.fecha_inicio.toISOString()) // Ej: 2025-12-15T10:00:00.000Z
-      .set('fecha_fin', filtro.fecha_fin.toISOString())
-      .set('granularidad', filtro.granularidad);
-
+  /**
+   * Obtiene el histórico agregado.
+   * @param idManometro ID del manómetro (ej: '1')
+   * @param fechaInicio String ISO (ej: '2024-12-07T10:00:00')
+   * @param fechaFin String ISO (ej: '2024-12-07T11:00:00')
+   */
+  obtenerHistorico(idManometro: string, fechaInicio: string, fechaFin: string): Observable<DataHistorial[]> {
     
-    return this.http.get<DatoGrafica[]>(`${this.apiUrl}/lecturas/agregadas`, { params });
+    // 2. Construcción de parámetros
+    // Esto genera: ?id_manometro=1&fecha_inicio=...&fecha_fin=...
+    let params = new HttpParams()
+      .set('id_manometro', idManometro)
+      .set('fecha_inicio', fechaInicio)
+      .set('fecha_fin', fechaFin);
 
+    // 3. Petición GET pasando las opciones
+    return this.http.get<DataHistorial[]>(`${this.apiUrl}/lecturas/agregadas`, { params });
   }
 
-
-
 }
-

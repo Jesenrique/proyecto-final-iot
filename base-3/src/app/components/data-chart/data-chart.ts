@@ -28,8 +28,12 @@ export class DataChart {
   });
 
   cargarDatos(rango: string) {
-    console.log(rango);
+    // Correcto: Solo los valores, en orden
+    this.dbService.obtenerHistorico("1", "2024-12-07T10:00:00", "2024-12-07T11:00:00")
+      .subscribe(datos => {
+        console.log('Datos recibidos:', datos);
+        // Aquí asignarías los datos a tu gráfica
+      });
   }
-
   
 }
