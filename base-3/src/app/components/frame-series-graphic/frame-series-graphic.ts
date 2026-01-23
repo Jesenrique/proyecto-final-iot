@@ -19,7 +19,7 @@ export class FrameSeriesGraphic {
   lastValue = input.required()
   dataGrafica = input.required<DataHistorial[]>();
 
-  public rangoSeleccionado: '1H' | '1D' | '1S' | '1M' | '1A' = '1H';
+  public rangoSeleccionado: 'hour' | 'day' | 'week' | 'month' | 'year' = 'hour';
 
   cambiarRango(rango: string) {
     this.rangoActivo.set(rango);

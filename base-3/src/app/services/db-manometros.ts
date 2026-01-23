@@ -57,14 +57,13 @@ export class DbManometros {
    * @param fechaInicio String ISO (ej: '2024-12-07T10:00:00')
    * @param fechaFin String ISO (ej: '2024-12-07T11:00:00')
    */
-  obtenerHistorico(idManometro: string, fechaInicio: string, fechaFin: string): Observable<DataHistorial[]> {
+  obtenerHistorico(idManometro: string, periodo: string): Observable<DataHistorial[]> {
     
     // 2. Construcción de parámetros
     // Esto genera: ?id_manometro=1&fecha_inicio=...&fecha_fin=...
     let params = new HttpParams()
       .set('id_manometro', idManometro)
-      .set('fecha_inicio', fechaInicio)
-      .set('fecha_fin', fechaFin);
+      .set('periodo', periodo)
 
     // 3. Petición GET pasando las opciones
     return this.http.get<DataHistorial[]>(`${this.apiUrl}/lecturas/agregadas`, { params });

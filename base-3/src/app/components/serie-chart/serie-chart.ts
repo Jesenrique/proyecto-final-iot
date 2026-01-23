@@ -32,6 +32,7 @@ export class SerieChart {
 
   public lineChartData = computed<ChartConfiguration<'line'>['data']>(() => {
     const datosCrudos = this.dataHistorial();
+
     // Transformamos los datos del backend al formato X/Y de ChartJS
     const datosFormateados = datosCrudos.map(item => ({
       x: item.periodo,
@@ -91,4 +92,6 @@ export class SerieChart {
   };
 
   public lineChartLegend = true;
+
+  
 }

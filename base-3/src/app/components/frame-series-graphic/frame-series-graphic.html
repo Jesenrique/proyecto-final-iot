@@ -34,44 +34,44 @@
 
       <div class="inline-flex rounded-md shadow-sm bg-gray-100 p-1" role="group">
         
-        <button type="button" (click)="cambiarRango('1H')" 
+        <button type="button" (click)="cambiarRango('hour')" 
           class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-          [ngClass]="rangoActivo() === '1H' 
+          [ngClass]="rangoActivo() === 'hour' 
             ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
             : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-          1H
+          hora
         </button>
 
-        <button type="button" (click)="cambiarRango('1D')" 
+        <button type="button" (click)="cambiarRango('day')" 
           class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-          [ngClass]="rangoActivo() === '1D' 
+          [ngClass]="rangoActivo() === 'day' 
             ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
             : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-          1D
+          día
         </button>
 
-        <button type="button" (click)="cambiarRango('1S')" 
+        <button type="button" (click)="cambiarRango('week')" 
           class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-          [ngClass]="rangoActivo() === '1S' 
+          [ngClass]="rangoActivo() === 'week' 
             ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
             : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-          1S
+          semana
         </button>
 
-        <button type="button" (click)="cambiarRango('1M')" 
+        <button type="button" (click)="cambiarRango('month')" 
           class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-          [ngClass]="rangoActivo() === '1M' 
+          [ngClass]="rangoActivo() === 'month' 
             ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
             : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-          1M
+          mes
         </button>
 
-         <button type="button" (click)="cambiarRango('1A')" 
+         <button type="button" (click)="cambiarRango('year')" 
          class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-         [ngClass]="rangoActivo() === '1A' 
+         [ngClass]="rangoActivo() === 'year' 
            ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-         1A
+         año
        </button>
       </div>
 
