@@ -5,9 +5,9 @@
     <!-- Titulo -->
     <div class="flex flex-row px-2 py-3 mx-3">
         <div class="flex flex-col mt-1 mb-2 ml-4">
-            <div class="text-sm text-gray-600">Presión</div>
+            <div class="text-sm  text-[#72256b]">Presión</div>
             <div class="flex w-full mt-1">
-                <div class="mr-1 text-xs text-blue-700 cursor-pointer font-base">
+                <div class="mr-1 text-xs  text-[#72256b] cursor-pointer font-base">
                     Manometro
                 </div>
                 <div class="text-xs text-gray-600">
@@ -17,13 +17,13 @@
         </div>
     </div>
     <!-- Manometro -->
-    <div class="flex flex-col items-center px-2 mx-3 my-2 text-sm font-medium text-gray-400">
+    <div class="flex flex-col items-center px-2 mx-3 my-2 text-sm font-medium text-[#72256b]">
         <app-analog-gauge [value]="signalValue()"></app-analog-gauge>
     </div>
     <!-- Descripcion -->
     <div class="mb-5 border-t border-gray-100">
         <div class="flex flex-wrap justify-start mx-5 mt-6 text-xs sm:justify-center ">
-            <div class="flex mb-2 mr-4 text-gray-700 ">Fecha de ultimo registro: <div class="ml-1 text-gray-500 text-ms"> {{signalFecha()| date:'medium'}}
+            <div class="flex mb-2 mr-4  text-[#72256b] ">Fecha de ultimo registro: <div class="ml-1  text-[#72256b] text-ms"> {{signalFecha()| date:'medium'}}
                 </div>
             </div>
         </div>
