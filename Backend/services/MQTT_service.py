@@ -3,7 +3,8 @@ import asyncio
 import json
 from gmqtt import Client as MQTTClient
 import websockets
-# from core.state_manager import get_active_clients
+from services.websocket_service import broadcast_data
+#from core.state_manager import get_active_clients
 
 # --- CONFIGURACIÓN ---
 BROKER = 'localhost'
@@ -12,11 +13,10 @@ TOPIC = "python/mqtt/#"
 
 # Esta función puede estar afuera porque no depende de la queue,
 # aunque necesitará acceso a los clientes websockets.
-async def broadcast_data(data: dict):
+#async def broadcast_data_mqtt(data: dict):
     # ... tu lógica de broadcast ...
-    print(f"📡 Broadcast simulado de: {data}")
-    # Aquí iría tu lógica real de websockets.broadcast(clients, json.dumps(data))
-
+    #print(f"📡 Broadcast simulado de: {data}")
+    
 
 async def start_mqtt_client_task(queue: asyncio.Queue):
     """

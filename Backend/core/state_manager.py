@@ -1,7 +1,7 @@
 # core/state_manager.py
-
 import websockets
 from typing import Set
+from services.mqtt_publisher import publish
 
 # El conjunto global que almacena las referencias a las conexiones activas
 CONNECTED_CLIENTS: Set[websockets.WebSocketServerProtocol] = set()
@@ -23,3 +23,7 @@ def unregister_client(websocket: websockets.WebSocketServerProtocol):
 async def get_active_clients() -> Set[websockets.WebSocketServerProtocol]:
     """Devuelve la lista actual de clientes para el broadcast."""
     return CONNECTED_CLIENTS
+
+async def emit_event(event):
+    print("inicio de evento piblicar")
+    await publish(event)

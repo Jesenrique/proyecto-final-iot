@@ -9,19 +9,19 @@ from core.state_manager import CONNECTED_CLIENTS, register_client, unregister_cl
 #CONNECTED_CLIENTS = set() - se crea 
 
 # Función para enviar datos a todos los clientes conectados
-# async def broadcast_data(data):
-#     """
-#     Envía datos JSON a todos los clientes conectados de forma asíncrona.
-#     """
-#     if CONNECTED_CLIENTS:
-#         message = json.dumps(data)
-#         # websockets.broadcast es la forma más eficiente y correcta
-#         # de enviar a un conjunto de clientes en esta librería.
-#         await websockets.broadcast(CONNECTED_CLIENTS, message)
-#         print(f"🤖 Enviado broadcast a {len(CONNECTED_CLIENTS)} clientes: {message}")
-#     else:
-#         # print("🤖 No hay clientes para broadcast.")
-#         pass
+async def broadcast_data(data):
+     """
+     Envía datos JSON a todos los clientes conectados de forma asíncrona.
+     """
+     if CONNECTED_CLIENTS:
+         message = json.dumps(data)
+         # websockets.broadcast es la forma más eficiente y correcta
+         # de enviar a un conjunto de clientes en esta librería.
+         websockets.broadcast(CONNECTED_CLIENTS, message)
+         print(f"🤖 Enviado broadcast a {len(CONNECTED_CLIENTS)} clientes: {message}")
+     else:
+         # print("🤖 No hay clientes para broadcast.")
+         pass
 
 # Nueva función asíncrona para simular un servicio de envío de datos (Tu bucle 'while True')
 # async def data_sender_task():

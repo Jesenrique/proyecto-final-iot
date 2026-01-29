@@ -14,7 +14,7 @@ export class WSService {
   }
 
   private connect() {
-    const ws = new WebSocket("ws://localhost:8765");
+    const ws = new WebSocket("ws://3.145.102.231:8765");
 
     ws.onmessage = (msg) => {
       console.log("Llegó:", msg.data);
