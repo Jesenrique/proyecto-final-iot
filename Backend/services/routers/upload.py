@@ -9,7 +9,7 @@ from core.state_manager import emit_event
 router_image = APIRouter(prefix="/upload-image", tags=["Upload"])
 
 MAX_FILE_SIZE = 500 * 1024
-ALLOWED_MIME = "image/jpeg" 
+ALLOWED_MIME = {"image/jpeg", "image/png"}
 BUCKET_NAME = os.getenv("S3_BUCKET_NAME", "iot-image-gauge")
 
 s3 = boto3.client(
@@ -39,8 +39,8 @@ async def upload_image(
 ):
     
     print (image.content_type)
-    if image.content_type != ALLOWED_MIME:
-        raise HTTPException(400, "Solo se permiten imágenes JPEG")
+    if image.content_type not in ALLOWED_MIME:
+        raise HTTPException(400, "El formato {image.content_type} no es permitido")
 
     content = await image.read()
 
@@ -54,7 +54,7 @@ async def upload_image(
             Bucket=BUCKET_NAME,
             Key=s3_key,
             Body=content,
-            ContentType=ALLOWED_MIME
+            ContentType=image.content_type
         )
     except Exception as e:
         print(e)

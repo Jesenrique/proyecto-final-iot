@@ -43,12 +43,12 @@ async def lifespan(app: FastAPI):
         try:
             DB_POOL = await connect_to_db()
             app.state.db_pool = DB_POOL
-            print("✅ Pool de DB creado y disponible en app.state.db_pool")
+            print("[DB ✅] Pool de DB creado y disponible en app.state.db_pool")
         except Exception as e:
             DB_POOL = None
-            print(f"❌ DB no disponible: {e}")
+            print(f"[DB ❌] DB no disponible: {e}")
     else:
-        print("⏭️ DB deshabilitada por configuración")
+        print("[DB ❌] DB deshabilitada por configuración")
 
 
     # 2. Iniciando Tareas de Larga Duración
@@ -59,38 +59,38 @@ async def lifespan(app: FastAPI):
             websocket_awaitable = start_websocket_server()
             websocket_server_instance = await websocket_awaitable
             app.state.websocket_server = websocket_server_instance
-            print("🌐 Servidor WebSockets lanzado y disponible.")
+            print("[WS ✅] Servidor WebSockets lanzado y disponible.")
         except Exception as e:
-            print(f"❌ WS no iniciado: {e}")
+            print(f"[WS ❌] WS no iniciado: {e}")
     else:
-        print("⏭️ WebSockets deshabilitados")
+        print("[WS ❌] WebSockets deshabilitados")
 
     
     if DB_POOL:
         db_task = asyncio.create_task(db_writer_worker(DATA_QUEUE, DB_POOL))
         LONG_RUNNING_TASKS.append(db_task)
     else:
-        print("⏭️ DB worker no iniciado (sin DB)")
+        print("[DB ❌] DB worker no iniciado (sin DB)")
 
     if ENABLE_MQTT:
         try:
             mqtt_task = asyncio.create_task(start_mqtt_client_task(DATA_QUEUE))
             LONG_RUNNING_TASKS.append(mqtt_task)
-            print("📡 Cliente MQTT lanzado como tarea asíncrona.")
+            print("[MQTT-SUB-WS-DB ✅] MQTT SUB lanzado como tarea asíncrona.")
         except Exception as e:
-            print(f"❌ MQTT no iniciado: {e}")
+            print(f"[MQTT-SUB-WS-DB ❌] MQTT no iniciado: {e}")
     else:
-        print("⏭️ MQTT deshabilitado")
+        print("[MQTT-SUB-WS-DB ❌] MQTT deshabilitado")
 
     if ENABLE_MQTT_PUBLISHER:
         try:
             mqtt_task_publisher = asyncio.create_task(connect())
             LONG_RUNNING_TASKS.append(mqtt_task_publisher)
-            print("Publicador MQTT lanzado como tarea asíncrona.")
+            print("[MQTT-PUB-IMG ✅] MQTT PUB lanzado como tarea asíncrona.")
         except Exception as e:
-            print(f"❌ MQTT no iniciado: {e}")
+            print(f"[MQTT-PUB-IMG ❌] MQTT no iniciado: {e}")
     else:
-        print("⏭️ MQTT deshabilitado")
+        print("[MQTT-PUB-IMG ❌] MQTT deshabilitado")
 
     
     # --- YIELD: La aplicación está lista para recibir peticiones y tareas de fondo ---
@@ -107,11 +107,11 @@ async def lifespan(app: FastAPI):
     
     # Esperamos un momento para que se limpien.
     await asyncio.gather(*LONG_RUNNING_TASKS, return_exceptions=True)
-    print("✅ Tareas de I/O canceladas y detenidas.")
+    print("[MAIN ✅] Tareas de I/O canceladas y detenidas.")
     
     if DB_POOL:
         await close_db_connection(DB_POOL)
-        print("✅ Pool de DB cerrado.")
+        print("[DB ✅] Pool de DB cerrado.")
 
 
 

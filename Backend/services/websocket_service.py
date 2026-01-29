@@ -18,7 +18,7 @@ async def broadcast_data(data):
          # websockets.broadcast es la forma más eficiente y correcta
          # de enviar a un conjunto de clientes en esta librería.
          websockets.broadcast(CONNECTED_CLIENTS, message)
-         print(f"🤖 Enviado broadcast a {len(CONNECTED_CLIENTS)} clientes: {message}")
+         print(f"[WS ✅] Enviado broadcast a {len(CONNECTED_CLIENTS)} clientes: {message}")
      else:
          # print("🤖 No hay clientes para broadcast.")
          pass
@@ -83,11 +83,10 @@ async def start_websocket_server():
     
     # Imprimir para confirmar dónde está escuchando realmente
     for sock in websocket_server.sockets:
-        print(f"🌐 WS escuchando en: {sock.getsockname()}")
+        print(f"[WS ✅] WS escuchando en: {sock.getsockname()}")
     #data_sender = data_sender_task() # Tu bucle de envío de datos
 
     # SOLUCIÓN 2: Ejecutamos ambas tareas al mismo tiempo (concurrentemente)
-    print("Servidor WebSockets iniciado en ws://localhost:8765")
     # await asyncio.gather ejecuta ambas tareas hasta que sean canceladas
     #await asyncio.gather(websocket_server, data_sender)
     return websocket_server

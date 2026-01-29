@@ -9,7 +9,7 @@ from services.websocket_service import broadcast_data
 # --- CONFIGURACIÓN ---
 BROKER = 'localhost'
 PORT = 1883
-TOPIC = "python/mqtt/#"
+TOPIC = "python/mqtt/image_processed"
 
 # Esta función puede estar afuera porque no depende de la queue,
 # aunque necesitará acceso a los clientes websockets.
@@ -32,7 +32,7 @@ async def start_mqtt_client_task(queue: asyncio.Queue):
     async def on_message(client, topic, payload, qos, properties):
         try:
             data = json.loads(payload.decode('utf-8'))
-            print(f"📥 [MQTT] Recibido: {data}")
+            print(f"[MQTT-SUB-WS-DB ✅] Recibido: {data}")
             
             # ✅ AHORA SÍ FUNCIONA: 'queue' es visible aquí porque estamos dentro de la función padre
             await queue.put(data)
@@ -41,10 +41,10 @@ async def start_mqtt_client_task(queue: asyncio.Queue):
             await broadcast_data(data)
             
         except Exception as e:
-            print(f"❌ Error procesando mensaje: {e}")
+            print(f"[MQTT-SUB-WS-DB ❌] Error procesando mensaje: {e}")
 
     def on_connect(client, flags, rc, properties):
-        print(f"✅ [MQTT] Conectado a {BROKER}")
+        print(f"[MQTT-SUB-WS-DB ✅] Conectado a {BROKER}")
         client.subscribe(TOPIC)
 
     # ---------------------------------------------------------
@@ -68,4 +68,4 @@ async def start_mqtt_client_task(queue: asyncio.Queue):
         await client.disconnect()
         
     except Exception as e:
-        print(f"❌ Error crítico en MQTT: {e}")
+        print(f"[MQTT-SUB-WS-DB ❌]  Error crítico en MQTT: {e}")
