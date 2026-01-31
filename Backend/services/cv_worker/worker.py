@@ -12,8 +12,8 @@ from services.cv_worker.processing import process_image
 BROKER = os.getenv("MQTT_BROKER", "localhost")
 PORT = 1883
 
-TOPIC_IN = "python/mqtt/image_uploaded"
-TOPIC_OUT = "python/mqtt/image_processed"
+TOPIC_IN = "plantaTratamiento/santander/01/image_uploaded"
+TOPIC_OUT = "plantaTratamiento/santander/01/image_processed"
 
 BUCKET = os.getenv("S3_BUCKET_NAME", "iot-image-gauge")
 AWS_REGION = os.getenv("AWS_REGION", "us-east-2")
@@ -27,7 +27,7 @@ mqtt = MQTTClient("cv-worker")
 async def on_message(client, topic, payload, qos, properties):
     try:
         event = json.loads(payload.decode())
-        print(f"[CV ✅] Evento recibido: {event}")
+        print(f"[CV ✅] Evento recibido")
 
         s3_key = event["s3_key"]
         device_id = event["device_id"]
@@ -51,11 +51,12 @@ async def on_message(client, topic, payload, qos, properties):
             "event": "image_processed",
             "device_id": device_id,
             "s3_key": s3_key,
-            "result": result
+            "id": 1,
+            "value": result
         }
 
         mqtt.publish(TOPIC_OUT, json.dumps(out_event), qos=1)
-        print(f"[CV ✅] Resultado publicado: {out_event}")
+        print(f"[CV ✅] Resultado publicado")
 
     except Exception as e:
         print(f"[CV ❌] Error en CV Worker: {e}")

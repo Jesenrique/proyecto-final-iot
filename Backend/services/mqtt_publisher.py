@@ -4,7 +4,7 @@ from gmqtt import Client as MQTTClient
 
 BROKER = os.getenv("MQTT_BROKER", "localhost")
 PORT = 1883
-TOPIC = "python/mqtt/image_uploaded"
+TOPIC = "plantaTratamiento/santander/01/image_uploaded"
 
 _client: MQTTClient | None = None
 

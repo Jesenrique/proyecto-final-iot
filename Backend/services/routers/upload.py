@@ -24,10 +24,12 @@ def build_s3_key(device_id: str) -> str:
     ts = int(time.time())
 
     return (
-        f"{device_id}/"
+        "santander/"
+        "01/"
         f"{now.year}/"
         f"{now.month:02d}/"
         f"{now.day:02d}/"
+        f"{device_id}/"
         f"img_{ts}.jpg"
     )
 

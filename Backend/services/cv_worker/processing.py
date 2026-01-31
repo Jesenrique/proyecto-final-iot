@@ -81,7 +81,7 @@ def hugh_line_open(edges, img_gray):
         color = (255, 255, 255)  # Blanco en BGR
         grosor = 1
         cv2.putText(img_gray, texto, posicion, fuente, escala, color, grosor, cv2.LINE_AA)
-
+        print(valor)
         return valor
  
 
@@ -100,10 +100,6 @@ def preprocesing(img):
 
 def process_image(img):
 
-    valor=preprocesing(img)
+    return preprocesing(img)
 
-    result = {
-        "valor_calculado": valor
-    }
 
-    return result

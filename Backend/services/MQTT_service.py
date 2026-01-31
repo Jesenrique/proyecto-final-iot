@@ -9,7 +9,7 @@ from services.websocket_service import broadcast_data
 # --- CONFIGURACIÓN ---
 BROKER = 'localhost'
 PORT = 1883
-TOPIC = "python/mqtt/image_processed"
+TOPIC = "plantaTratamiento/santander/01/image_processed"
 
 # Esta función puede estar afuera porque no depende de la queue,
 # aunque necesitará acceso a los clientes websockets.
@@ -32,7 +32,7 @@ async def start_mqtt_client_task(queue: asyncio.Queue):
     async def on_message(client, topic, payload, qos, properties):
         try:
             data = json.loads(payload.decode('utf-8'))
-            print(f"[MQTT-SUB-WS-DB ✅] Recibido: {data}")
+            print(f"[MQTT-SUB-WS-DB ✅] Recibido")
             
             # ✅ AHORA SÍ FUNCIONA: 'queue' es visible aquí porque estamos dentro de la función padre
             await queue.put(data)
