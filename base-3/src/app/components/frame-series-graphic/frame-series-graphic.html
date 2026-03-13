@@ -1,89 +1,101 @@
-<div class="w-full bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-  
-    <!-- parte superior -->
-  <div class="flex justify-between items-start mb-4">
+<section class="chart-panel">
+  <header class="panel-head">
     <div>
-      <h5 class="text-3xl font-bold text-gray-900 ">
-        {{lastValue()}}
-      </h5>
-      <p class="text-gray-500 text-sm mt-1">Manometro numero: </p>
+      <p class="panel-eyebrow">Monitoreo de presion</p>
+      <h2 class="panel-value">{{ lastValue() ?? '--' }} <span>PSI</span></h2>
+      <p class="panel-subtitle">Lectura actual en {{ rangoLabel() }}</p>
     </div>
 
-    <div class="flex items-center px-2.5 py-0.5 text-sm font-semibold text-green-600 bg-green-100 rounded-full text-center">
-      <svg class="w-3 h-3 me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
-      </svg>
-      Normal
-    </div>
-  </div>
+    <span class="panel-status" [class]="'panel-status panel-status-' + panelStatus()">
+      <span class="panel-status-dot" aria-hidden="true"></span>
+      {{ statusText() }}
+    </span>
+  </header>
 
+  <section class="panel-kpis" aria-label="Resumen del rango actual">
+    <article class="kpi-chip">
+      <p class="kpi-chip-label">Promedio</p>
+      <p class="kpi-chip-value">{{ summary().avg !== null ? (summary().avg | number: '1.0-1') : '--' }} <span>PSI</span></p>
+    </article>
+    <article class="kpi-chip">
+      <p class="kpi-chip-label">Maximo</p>
+      <p class="kpi-chip-value">{{ summary().max !== null ? (summary().max | number: '1.0-1') : '--' }} <span>PSI</span></p>
+    </article>
+    <article class="kpi-chip">
+      <p class="kpi-chip-label">Minimo</p>
+      <p class="kpi-chip-value">{{ summary().min !== null ? (summary().min | number: '1.0-1') : '--' }} <span>PSI</span></p>
+    </article>
+  </section>
 
-  <!-- Acá se pasa el espacio para graficar -->
-  
-  <app-serie-chart [dataHistorial]="dataGrafica()"></app-serie-chart>
-  
-
-  <!-- parte baja de botones -->
-  <div class="grid grid-cols-1 items-center border-t border-gray-200 justify-between mt-2 pt-4">
-    
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-      
-      <span class="text-sm font-medium text-gray-500 hidden sm:block">
-        Rango de tiempo:
-      </span>
-
-      <div class="inline-flex rounded-md shadow-sm bg-gray-100 p-1" role="group">
-        
-        <button type="button" (click)="cambiarRango('hour')" 
-          class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-          [ngClass]="rangoActivo() === 'hour' 
-            ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
-            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-          hora
-        </button>
-
-        <button type="button" (click)="cambiarRango('day')" 
-          class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-          [ngClass]="rangoActivo() === 'day' 
-            ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
-            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-          día
-        </button>
-
-        <button type="button" (click)="cambiarRango('week')" 
-          class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-          [ngClass]="rangoActivo() === 'week' 
-            ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
-            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-          semana
-        </button>
-
-        <button type="button" (click)="cambiarRango('month')" 
-          class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-          [ngClass]="rangoActivo() === 'month' 
-            ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
-            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-          mes
-        </button>
-
-         <button type="button" (click)="cambiarRango('year')" 
-         class="px-4 py-2 text-xs font-medium rounded transition-all duration-200"
-         [ngClass]="rangoActivo() === 'year' 
-           ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5 font-bold' 
-           : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200'">
-         año
-       </button>
+  <div class="panel-chart">
+    @if (loading()) {
+      <div class="panel-state state-loading" role="status" aria-live="polite">
+        <div class="loading-line w-70"></div>
+        <div class="loading-line w-100"></div>
+        <div class="loading-line w-85"></div>
       </div>
-
-      <a href="#" class="text-sm font-medium text-blue-600 hover:underline inline-flex items-center">
-        Ver Reporte
-        <svg class="w-3 h-3 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
-        </svg>
-      </a>
-
-    </div>
+    } @else if (error()) {
+      <div class="panel-state state-error" role="alert">
+        <p class="state-title">No pudimos cargar la grafica.</p>
+        <p class="state-text">{{ error() }}</p>
+        <button type="button" class="state-btn" (click)="solicitarReintento()">Reintentar</button>
+      </div>
+    } @else if (!hasData()) {
+      <div class="panel-state state-empty">
+        <p class="state-title">Sin datos para este rango</p>
+        <p class="state-text">Prueba con otro rango de tiempo para ver lecturas.</p>
+      </div>
+    } @else {
+      <app-serie-chart [dataHistorial]="dataGrafica()" [status]="panelStatus()"></app-serie-chart>
+    }
   </div>
 
+  <footer class="panel-foot">
+    <span class="range-label">Rango de tiempo</span>
 
-</div>
+    <div class="range-controls" role="group" aria-label="Seleccion de rango de tiempo">
+      <button
+        type="button"
+        class="range-btn"
+        [class.range-btn-active]="rangoActivo() === 'hour'"
+        (click)="cambiarRango('hour')"
+      >
+        hora
+      </button>
+      <button
+        type="button"
+        class="range-btn"
+        [class.range-btn-active]="rangoActivo() === 'day'"
+        (click)="cambiarRango('day')"
+      >
+        dia
+      </button>
+      <button
+        type="button"
+        class="range-btn"
+        [class.range-btn-active]="rangoActivo() === 'week'"
+        (click)="cambiarRango('week')"
+      >
+        semana
+      </button>
+      <button
+        type="button"
+        class="range-btn"
+        [class.range-btn-active]="rangoActivo() === 'month'"
+        (click)="cambiarRango('month')"
+      >
+        mes
+      </button>
+      <button
+        type="button"
+        class="range-btn"
+        [class.range-btn-active]="rangoActivo() === 'year'"
+        (click)="cambiarRango('year')"
+      >
+        ano
+      </button>
+    </div>
+
+    <a href="#" class="report-link">Ver reporte</a>
+  </footer>
+</section>

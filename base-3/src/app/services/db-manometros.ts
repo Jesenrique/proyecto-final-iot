@@ -11,7 +11,8 @@ import { DataHistorial } from '../interfaces/dataHistorial';
 })
 export class DbManometros {
 
-  private apiUrl = 'http://3.145.102.231:8000';
+  private apiUrl = 'http://water-treatment.duckdns.org:8001';
+  //private apiUrl = 'http://3.139.70.223:8000';
 
   dataManometros = signal<DataManometro[]>([]);
 

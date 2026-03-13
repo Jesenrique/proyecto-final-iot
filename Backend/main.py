@@ -7,7 +7,6 @@ from contextlib import asynccontextmanager
 from services.websocket_service import start_websocket_server 
 from services.MQTT_service import start_mqtt_client_task 
 from services.db_worker import db_writer_worker
-from services.mqtt_publisher import connect
 
 # Asumo que tienes estas funciones de DB
 from services.config.db import connect_to_db, close_db_connection
@@ -15,7 +14,6 @@ from services.config.db import connect_to_db, close_db_connection
 from fastapi.middleware.cors import CORSMiddleware
 
 from services.routers.plantas import router as plantas_router
-from services.routers.upload import router_image as image_router
 
 import os
 
@@ -28,10 +26,9 @@ DATA_QUEUE = asyncio.Queue()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    ENABLE_DB = "true"
-    ENABLE_MQTT = "true"
-    ENABLE_WS = "true"
-    ENABLE_MQTT_PUBLISHER = "true"
+    ENABLE_DB = os.getenv("ENABLE_DB", "true").lower() == "true"
+    ENABLE_MQTT = os.getenv("ENABLE_MQTT", "true").lower() == "true"
+    ENABLE_WS = os.getenv("ENABLE_WS", "true").lower() == "true"
     # FASE DE INICIO (Antes del yield)
 
     print("=============================================")
@@ -65,7 +62,7 @@ async def lifespan(app: FastAPI):
     else:
         print("[WS ❌] WebSockets deshabilitados")
 
-    
+    #manejo de la cola
     if DB_POOL:
         db_task = asyncio.create_task(db_writer_worker(DATA_QUEUE, DB_POOL))
         LONG_RUNNING_TASKS.append(db_task)
@@ -74,7 +71,7 @@ async def lifespan(app: FastAPI):
 
     if ENABLE_MQTT:
         try:
-            mqtt_task = asyncio.create_task(start_mqtt_client_task(DATA_QUEUE))
+            mqtt_task = asyncio.create_task(start_mqtt_client_task(DATA_QUEUE if DB_POOL else None))
             LONG_RUNNING_TASKS.append(mqtt_task)
             print("[MQTT-SUB-WS-DB ✅] MQTT SUB lanzado como tarea asíncrona.")
         except Exception as e:
@@ -82,17 +79,6 @@ async def lifespan(app: FastAPI):
     else:
         print("[MQTT-SUB-WS-DB ❌] MQTT deshabilitado")
 
-    if ENABLE_MQTT_PUBLISHER:
-        try:
-            mqtt_task_publisher = asyncio.create_task(connect())
-            LONG_RUNNING_TASKS.append(mqtt_task_publisher)
-            print("[MQTT-PUB-IMG ✅] MQTT PUB lanzado como tarea asíncrona.")
-        except Exception as e:
-            print(f"[MQTT-PUB-IMG ❌] MQTT no iniciado: {e}")
-    else:
-        print("[MQTT-PUB-IMG ❌] MQTT deshabilitado")
-
-    
     # --- YIELD: La aplicación está lista para recibir peticiones y tareas de fondo ---
     yield 
     
@@ -131,7 +117,6 @@ app.add_middleware(
 
 # --- CONECTAR EL ROUTER A LA APP ---
 app.include_router(plantas_router)
-app.include_router(image_router)
 
 
 # (No necesitas el if __name__ == "__main__": asyncio.run(main())

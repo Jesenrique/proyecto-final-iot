@@ -1,72 +1,32 @@
-<!-- component -->
-
-<div
-    class="col-span-4 mt-5 bg-opacity-50 border border-gray-100 rounded shadow-lg cursor-pointer bg-gradient-to-b from-gray-200 backdrop-blur-20 to-gray-50 md:col-span-2 lg:col-span-1 ">
-    <!-- Titulo -->
-    <div class="flex flex-row px-2 py-3 mx-3">
-        <div class="flex flex-col mt-1 mb-2 ml-4">
-            <div class="text-sm  text-[#72256b]">Presión</div>
-            <div class="flex w-full mt-1">
-                <div class="mr-1 text-xs  text-[#72256b] cursor-pointer font-base">
-                    Manometro
-                </div>
-                <div class="text-xs text-gray-600">
-                {{siganlID()}}
-                </div>
-            </div>
-        </div>
+<article class="card-shell" tabindex="0" role="button" aria-label="Ver detalle del manometro {{ siganlID() }}">
+  <header class="card-head">
+    <div>
+      <p class="card-label">Presion</p>
+      <h3 class="card-title">Manometro {{ siganlID() }}</h3>
     </div>
-    <!-- Manometro -->
-    <div class="flex flex-col items-center px-2 mx-3 my-2 text-sm font-medium text-[#72256b]">
-        <app-analog-gauge [value]="signalValue()"></app-analog-gauge>
-    </div>
-    <!-- Descripcion -->
-    <div class="mb-5 border-t border-gray-100">
-        <div class="flex flex-wrap justify-start mx-5 mt-6 text-xs sm:justify-center ">
-            <div class="flex mb-2 mr-4  text-[#72256b] ">Fecha de ultimo registro: <div class="ml-1  text-[#72256b] text-ms"> {{signalFecha()| date:'medium'}}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <span class="card-badge" [class]="'card-badge ' + statusClass()">
+      <span class="card-badge-dot" aria-hidden="true"></span>
+      {{ statusText() }}
+    </span>
+  </header>
 
-
-
-
-
-<!-- <div
-    class="col-span-4 mt-5 bg-opacity-50 border border-gray-100 rounded shadow-lg cursor-pointer bg-gradient-to-b from-gray-200 backdrop-blur-20 to-gray-50 md:col-span-2 lg:col-span-1 ">
-    
-    <div class="flex flex-row px-2 py-3 mx-3">
-        <div class="flex flex-col mt-1 mb-2 ml-4">
-            <div class="text-sm text-gray-600">Presión</div>
-            <div class="flex w-full mt-1">
-                <div class="mr-1 text-xs text-blue-700 cursor-pointer font-base">
-                    Manometro
-                </div>
-                <div class="text-xs text-gray-600">
-                {{siganlID()}}
-                </div>
-            </div>
-        </div>
+  <section class="card-main">
+    <div class="card-gauge-wrap">
+      <app-analog-gauge [value]="signalValue()" [size]="180"></app-analog-gauge>
     </div>
-   
-    <div class="flex flex-col items-center px-2 mx-3 my-2 text-sm font-medium text-gray-400">
-        <app-analog-gauge [value]="signalValue()"></app-analog-gauge>
+
+    <div class="card-kpi">
+      <p class="kpi-label">Valor actual</p>
+      <p class="kpi-value">{{ signalValue() | number: '1.0-1' }} <span>PSI</span></p>
+      <p class="kpi-subtext">Ultimo guardado: {{ signalUltimaLectura() | number: '1.0-1' }} PSI</p>
     </div>
-    
-    <div class="mb-5 border-t border-gray-100">
-        <div class="flex flex-wrap justify-start mx-5 mt-6 text-xs sm:justify-center ">
-            <div class="flex mb-2 mr-4 font-normal text-gray-700 ">Sales:<div class="ml-1 text-gray-500 text-ms">
-                    30k</div>
-            </div>
-            <div class="flex mb-2 mr-4 font-normal text-gray-700 ">Recipies: <div
-                    class="ml-1 text-gray-500 text-ms"> 60k</div>
-            </div>
-            <div class="flex mb-2 mr-4 text-gray-700 ">Fecha de ultimo registro: <div class="ml-1 text-gray-500 text-ms"> {{signalFecha()| date:'medium'}}
-                </div>
-            </div>
-        </div>
+  </section>
+
+  <footer class="card-foot">
+    <div>
+      <p class="foot-label">Ultima actualizacion</p>
+      <p class="foot-time">{{ relativeTime() }}</p>
     </div>
-</div>
- -->
+    <p class="foot-date">{{ signalFecha() | date: 'dd/MM/yyyy HH:mm' }}</p>
+  </footer>
+</article>

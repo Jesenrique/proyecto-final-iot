@@ -1,14 +1,23 @@
-.chart-wrapper {
-  padding: 20px;
-  font-family: sans-serif;
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-.chart-container {
+.serie-chart-shell {
   position: relative;
-  height: 400px; /* Altura del gráfico */
-  width: 90%;    /* Ancho del gráfico */
-  margin: auto;
-  border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  border-radius: 0.75rem;
+  border: 1px solid #dbe3ee;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  padding: 0.55rem 0.7rem;
+}
+
+@media (max-width: 640px) {
+  .serie-chart-shell {
+    min-height: 240px;
+    padding: 0.45rem 0.55rem;
+  }
 }

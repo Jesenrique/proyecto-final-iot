@@ -1,23 +1,14 @@
-import { Component, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, input } from '@angular/core';
+import { Chart, ChartConfiguration, ChartOptions, registerables } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-
-// 1. IMPORTAR FUNCIONALIDADES DE CHART.JS
-import { ChartConfiguration, ChartOptions, ChartType } from 'chart.js';
-import { Chart, registerables } from 'chart.js';
-
-// 2. IMPORTAR EL ADAPTADOR DE FECHA Y EL IDIOMA
 import 'chartjs-adapter-date-fns';
 import { es } from 'date-fns/locale';
-
-import 'chartjs-adapter-date-fns';
 import { DataHistorial } from '../../interfaces/dataHistorial';
 
-// 3. Registras todo
 Chart.register(...registerables);
 
-// Registrar los componentes
-//Chart.register(...registerables);
+type ChartStatus = 'normal' | 'alerta' | 'critico';
 
 @Component({
   selector: 'app-serie-chart',
@@ -26,72 +17,149 @@ Chart.register(...registerables);
   styleUrl: './serie-chart.css',
 })
 export class SerieChart {
-
   dataHistorial = input.required<DataHistorial[]>();
+  status = input<ChartStatus>('normal');
 
+  // Paleta semantica segun estado del panel.
+  tone = computed(() => {
+    switch (this.status()) {
+      case 'critico':
+        return {
+          line: '#dc2626',
+          area: 'rgba(220, 38, 38, 0.14)',
+          point: '#991b1b',
+        };
+      case 'alerta':
+        return {
+          line: '#d97706',
+          area: 'rgba(245, 158, 11, 0.16)',
+          point: '#92400e',
+        };
+      default:
+        return {
+          line: '#2563eb',
+          area: 'rgba(37, 99, 235, 0.14)',
+          point: '#1d4ed8',
+        };
+    }
+  });
 
-  public lineChartData = computed<ChartConfiguration<'line'>['data']>(() => {
-    const datosCrudos = this.dataHistorial();
-
-    // Transformamos los datos del backend al formato X/Y de ChartJS
-    const datosFormateados = datosCrudos.map(item => ({
+  lineChartData = computed<ChartConfiguration<'line'>['data']>(() => {
+    const datosFormateados = this.dataHistorial().map((item) => ({
       x: item.periodo,
-      y: item.promedio
+      y: item.promedio,
     }));
 
-    // Retornamos la estructura compleja que pide la librería
+    const color = this.tone();
+
     return {
       datasets: [
         {
-          // se debe castear como any por que typescript pone problema por 
-          // tipo de dato para los ejes
+          // Cast necesario para compatibilidad de tipos con el eje temporal.
           data: datosFormateados as any[],
-          label: 'Presión (PSI)',
+          label: 'Presion (PSI)',
           fill: true,
-          tension: 0.4,
-          borderColor: 'blue',
-          backgroundColor: 'rgba(0,0,255,0.2)'
-        }
-      ]
+          tension: 0.32,
+          borderWidth: 2,
+          borderColor: color.line,
+          backgroundColor: color.area,
+          pointBackgroundColor: color.point,
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 1,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 2,
+        },
+      ],
     };
   });
 
-  // --- CONFIGURACIÓN DE OPCIONES (Cómo se ve) ---
-  public lineChartOptions: ChartOptions<'line'> = {
+  lineChartOptions: ChartOptions<'line'> = {
     responsive: true,
-    scales: {
-      // CONFIGURACIÓN DEL EJE X (TIEMPO)
-      x: {
-        type: 'time', // <--- ESTO ES LO MÁS IMPORTANTE
-        time: {
-          unit: 'minute', // Queremos ver minutos
-          displayFormats: {
-            minute: 'HH:mm' // Formato visual: "10:30"
+    maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        backgroundColor: 'rgba(15, 23, 42, 0.94)',
+        titleColor: '#e2e8f0',
+        bodyColor: '#f8fafc',
+        borderColor: '#334155',
+        borderWidth: 1,
+        padding: 10,
+        displayColors: false,
+        callbacks: {
+          label: (context) => {
+            const value = context.parsed.y;
+            return `Presion: ${value} PSI`;
           },
-          tooltipFormat: 'dd/MM/yyyy HH:mm' // Al pasar el mouse
+        },
+      },
+    },
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          unit: 'minute',
+          displayFormats: {
+            minute: 'HH:mm',
+          },
+          tooltipFormat: 'dd/MM/yyyy HH:mm',
         },
         adapters: {
           date: {
-            locale: es // Usar español
-          }
+            locale: es,
+          },
+        },
+        ticks: {
+          color: '#64748b',
+          maxTicksLimit: 8,
+          font: {
+            size: 11,
+          },
+        },
+        grid: {
+          color: 'rgba(148, 163, 184, 0.18)',
         },
         title: {
           display: true,
-          text: 'Tiempo (Hora)'
-        }
+          text: 'Tiempo',
+          color: '#64748b',
+          font: {
+            size: 11,
+            weight: 600,
+          },
+        },
       },
-      // CONFIGURACIÓN DEL EJE Y (VALOR)
       y: {
-        beginAtZero: false, // No forzar que empiece en 0 si la presión es alta
+        beginAtZero: false,
+        ticks: {
+          color: '#64748b',
+          maxTicksLimit: 6,
+          font: {
+            size: 11,
+          },
+        },
+        grid: {
+          color: 'rgba(148, 163, 184, 0.16)',
+        },
         title: {
           display: true,
-          text: 'Presión (PSI)'
-        }
-      }
-    }
+          text: 'Presion (PSI)',
+          color: '#64748b',
+          font: {
+            size: 11,
+            weight: 600,
+          },
+        },
+      },
+    },
   };
 
-  public lineChartLegend = true;
-
-  
+  lineChartLegend = false;
 }

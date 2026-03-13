@@ -9,7 +9,7 @@ from services.websocket_service import broadcast_data
 # --- CONFIGURACIÓN ---
 BROKER = 'localhost'
 PORT = 1883
-TOPIC = "plantaTratamiento/santander/01/image_processed"
+TOPIC = "plantaTratamiento/santander/01/image_result"
 
 # Esta función puede estar afuera porque no depende de la queue,
 # aunque necesitará acceso a los clientes websockets.
@@ -18,7 +18,7 @@ TOPIC = "plantaTratamiento/santander/01/image_processed"
     #print(f"📡 Broadcast simulado de: {data}")
     
 
-async def start_mqtt_client_task(queue: asyncio.Queue):
+async def start_mqtt_client_task(queue: asyncio.Queue | None):
     """
     Inicializa el cliente MQTT (gmqtt) dentro del loop de asyncio.
     """
@@ -34,8 +34,9 @@ async def start_mqtt_client_task(queue: asyncio.Queue):
             data = json.loads(payload.decode('utf-8'))
             print(f"[MQTT-SUB-WS-DB ✅] Recibido")
             
-            # ✅ AHORA SÍ FUNCIONA: 'queue' es visible aquí porque estamos dentro de la función padre
-            await queue.put(data)
+            # AHORA: 'queue' es visible aquí porque estamos dentro de la función padre
+            if queue is not None:
+                await queue.put(data)
             
             # Broadcast
             await broadcast_data(data)
@@ -69,3 +70,4 @@ async def start_mqtt_client_task(queue: asyncio.Queue):
         
     except Exception as e:
         print(f"[MQTT-SUB-WS-DB ❌]  Error crítico en MQTT: {e}")
+

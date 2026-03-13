@@ -1,11 +1,10 @@
-<div class="chart-wrapper">
-  <h2>Monitoreo de Presión</h2>
-  <div class="chart-container">
-    <canvas baseChart
-      [data]="lineChartData()"
-      [options]="lineChartOptions"
-      [legend]="lineChartLegend"
-      [type]="'line'">
-    </canvas>
-  </div>
+<div class="serie-chart-shell">
+  <canvas
+    baseChart
+    [data]="lineChartData()"
+    [options]="lineChartOptions"
+    [legend]="lineChartLegend"
+    [type]="'line'"
+  >
+  </canvas>
 </div>

@@ -1,1 +1,27 @@
 
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.right-bg {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+  background: linear-gradient(160deg, #fff3dc 0%, #ffe1bd 48%, #f4cfa9 100%);
+}
+
+/* Capa de profundidad: dos radiales suaves para evitar fondo plano */
+.right-bg-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(800px 380px at 8% -10%, rgba(255, 255, 255, 0.62), transparent 62%),
+    radial-gradient(720px 420px at 92% 110%, rgba(233, 185, 143, 0.28), transparent 64%);
+}
+
+.right-content {
+  position: relative;
+  z-index: 1;
+}
